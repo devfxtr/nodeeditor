@@ -2,6 +2,7 @@
 #include <nodes/FlowScene>
 #include <nodes/FlowView>
 #include <nodes/ConnectionStyle>
+#include <nodes/Converter>
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QVBoxLayout>
@@ -16,13 +17,19 @@
 #include "MultiplicationModel.hpp"
 #include "DivisionModel.hpp"
 #include "ModuloModel.hpp"
-#include "DecimalToIntegerModel.hpp"
-#include "IntegerToDecimalModel.hpp"
+#include "DecimalToIntegerConverter.hpp"
+//#include "IntegerToDecimalModel.hpp"
+
+#include "DecimalData.hpp"
+#include "IntegerData.hpp"
 
 using QtNodes::DataModelRegistry;
 using QtNodes::FlowScene;
 using QtNodes::FlowView;
 using QtNodes::ConnectionStyle;
+using QtNodes::Converter;
+using QtNodes::ConverterType;
+using QtNodes::ConverterDataModel;
 
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
@@ -42,9 +49,15 @@ registerDataModels()
 
   ret->registerModel<ModuloModel>("Operators");
 
-  ret->registerModel<DecimalToIntegerModel, true>("Type converters");
+  ConverterType converterType = std::make_pair(DecimalData().type(),
+                                 IntegerData().type());
 
-  ret->registerModel<IntegerToDecimalModel, true>("Type converters");
+  ret->registerTypeConverter(ConverterDataModel{ converterType,
+                                                 Converter{DecimalToIntegerConverter()} });
+
+  //ret->registerModel<DecimalToIntegerModel, true>("Type converters");
+
+  //ret->registerModel<IntegerToDecimalModel, true>("Type converters");
 
   return ret;
 }
